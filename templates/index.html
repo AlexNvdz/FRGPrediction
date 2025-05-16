@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Predicción Individual de Crecimiento Fetal</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      padding-top: 75px;
+      background-color: #f9f9f9;
+    }
+    .form-section {
+      background: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 7px 29px rgba(100, 100, 111, 0.2);
+      margin-bottom: 20px;
+    }
+    .form-label {
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+  <!-- Navbar con enlace a predicción por lotes -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#">Predicción Fetal</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+         <ul class="navbar-nav ms-auto">
+           <li class="nav-item">
+             <a class="nav-link active" href="{{ url_for('index') }}">Individual</a>
+           </li>
+           <li class="nav-item">
+             <a class="nav-link" href="{{ url_for('batch_page') }}">Por Lotes</a>
+           </li>
+         </ul>
+      </div>
+    </div>
+  </nav>
+  
+  <div class="container">
+    <div class="form-section">
+      <h1 class="mb-4">Predicción Individual de Crecimiento Fetal</h1>
+      
+      <!-- Mostrar mensajes de error -->
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="alert alert-danger" role="alert">
+            <ul class="mb-0">
+              {% for message in messages %}
+                <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      {% endwith %}
+      
+      <form action="{{ url_for('predict') }}" method="post">
+        <div class="row">
+          <!-- Columna izquierda: C1 a C15 -->
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="C1" class="form-label">C1 = Age:</label>
+              <input type="text" class="form-control" id="C1" name="C1" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C2" class="form-label">C2 = BMI:</label>
+              <input type="text" class="form-control" id="C2" name="C2" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C3" class="form-label">C3 = Gestational age of delivery (weeks):</label>
+              <input type="text" class="form-control" id="C3" name="C3" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C4" class="form-label">C4 = Gravidity:</label>
+              <input type="text" class="form-control" id="C4" name="C4" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C5" class="form-label">C5 = Parity:</label>
+              <input type="text" class="form-control" id="C5" name="C5" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C6" class="form-label">C6 = Initial onset symptoms (IOS):</label>
+              <select class="form-select" id="C6" name="C6" required>
+                <option value="">Seleccione...</option>
+                <option value="0" selected>0 – edema</option>
+                <option value="1">1 – hypertension</option>
+                <option value="2">2 – FGR</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="C7" class="form-label">C7 = Gestational age of IOS onset (weeks):</label>
+              <input type="text" class="form-control" id="C7" name="C7" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C8" class="form-label">C8 = Interval from IOS onset to delivery (days):</label>
+              <input type="text" class="form-control" id="C8" name="C8" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C9" class="form-label">C9 = Gestational age of hypertension onset (weeks):</label>
+              <input type="text" class="form-control" id="C9" name="C9" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C10" class="form-label">C10 = Interval from hypertension onset to delivery (days):</label>
+              <input type="text" class="form-control" id="C10" name="C10" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C11" class="form-label">C11 = Gestational age of edema onset (weeks):</label>
+              <input type="text" class="form-control" id="C11" name="C11" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C12" class="form-label">C12 = Interval from edema onset to delivery (days):</label>
+              <input type="text" class="form-control" id="C12" name="C12" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C13" class="form-label">C13 = Gestational age of proteinuria onset (weeks):</label>
+              <input type="text" class="form-control" id="C13" name="C13" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C14" class="form-label">C14 = Interval from proteinuria onset to delivery (days):</label>
+              <input type="text" class="form-control" id="C14" name="C14" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C15" class="form-label">C15 = Expectant treatment:</label>
+              <input type="text" class="form-control" id="C15" name="C15" value="0" required>
+            </div>
+          </div>
+          
+          <!-- Columna derecha: C16 a C30 -->
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label for="C16" class="form-label">C16 = Anti-hypertensive therapy before hospitalization:</label>
+              <input type="text" class="form-control" id="C16" name="C16" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C17" class="form-label">C17 = Past history:</label>
+              <select class="form-select" id="C17" name="C17" required>
+                <option value="">Seleccione...</option>
+                <option value="0" selected>0 – No</option>
+                <option value="1">1 – hypertension</option>
+                <option value="2">2 – PCOS</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="C18" class="form-label">C18 = Maximum systolic blood pressure:</label>
+              <input type="text" class="form-control" id="C18" name="C18" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C19" class="form-label">C19 = Maximum diastolic blood pressure:</label>
+              <input type="text" class="form-control" id="C19" name="C19" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C20" class="form-label">C20 = Reasons for delivery:</label>
+              <select class="form-select" id="C20" name="C20" required>
+                <option value="">Seleccione...</option>
+                <option value="0" selected>0 – HELLP Syndrome</option>
+                <option value="1">1 – Fetal distress</option>
+                <option value="2">2 – Organ dysfunction</option>
+                <option value="3">3 – Uncontrolled hypertension</option>
+                <option value="4">4 – Edema</option>
+                <option value="5">5 – FGR</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="C21" class="form-label">C21 = Mode of delivery:</label>
+              <select class="form-select" id="C21" name="C21" required>
+                <option value="">Seleccione...</option>
+                <option value="0" selected>0 – CS</option>
+                <option value="1">1 – Odinopoeia</option>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label for="C22" class="form-label">C22 = Maximum BNP value:</label>
+              <input type="text" class="form-control" id="C22" name="C22" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C23" class="form-label">C23 = Maximum values of creatinine:</label>
+              <input type="text" class="form-control" id="C23" name="C23" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C24" class="form-label">C24 = Maximum uric acid value:</label>
+              <input type="text" class="form-control" id="C24" name="C24" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C25" class="form-label">C25 = Maximum proteinuria value:</label>
+              <input type="text" class="form-control" id="C25" name="C25" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C26" class="form-label">C26 = Maximum total protein value:</label>
+              <input type="text" class="form-control" id="C26" name="C26" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C27" class="form-label">C27 = Maximum albumin value:</label>
+              <input type="text" class="form-control" id="C27" name="C27" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C28" class="form-label">C28 = Maximum ALT value:</label>
+              <input type="text" class="form-control" id="C28" name="C28" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C29" class="form-label">C29 = Maximum AST value:</label>
+              <input type="text" class="form-control" id="C29" name="C29" value="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="C30" class="form-label">C30 = Maximum platelet value:</label>
+              <input type="text" class="form-control" id="C30" name="C30" value="0" required>
+            </div>
+          </div> <!-- end col-md-6 -->
+        </div> <!-- end row -->
+        
+        <!-- Selección del modelo -->
+        <div class="mb-3">
+          <label for="selected_model" class="form-label">Seleccione el modelo:</label>
+          <select class="form-select" name="selected_model" id="selected_model" required>
+            <option value="">--Seleccione un modelo--</option>
+            <option value="logistic">Regresión Logística</option>
+            <option value="svm">SVM</option>
+            <option value="neural">Red Neuronal</option>
+            <option value="fcm">FCM</option>
+          </select>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Predecir</button>
+      </form>
+      
+      <!-- Mostrar el resultado (si existe) -->
+      {% if result %}
+        <div class="mt-4 alert alert-info">
+          <h4>{{ result }}</h4>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  
+  <!-- Bootstrap Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
