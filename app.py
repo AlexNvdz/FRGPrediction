@@ -4,7 +4,6 @@ import numpy as np
 import joblib
 import pandas as pd
 from sklearn.metrics import accuracy_score, confusion_matrix
-from tensorflow.keras.models import load_model
 import skfuzzy as fuzz  # Para FCM
 
 app = Flask(__name__)
@@ -13,7 +12,6 @@ app.secret_key = "tu_clave_secreta"  # Reemplaza con una clave segura
 # Cargar los modelos entrenados
 logistic_model = joblib.load("models/logistic_regression.pkl")
 svm_model = joblib.load("models/svm.pkl")
-neural_model = load_model("models/neural_network.h5")
 fcm_model = joblib.load("models/fcm.pkl")
 
 # ------------------------------
@@ -51,9 +49,6 @@ def predict():
             y_pred = logistic_model.predict(input_array)
         elif model_selection == "svm":
             y_pred = svm_model.predict(input_array)
-        elif model_selection == "neural":
-            y_probs = neural_model.predict(input_array)
-            y_pred = (y_probs.flatten() > 0.5).astype(int)  # Convierte a 0 o 1 sin THRESHOLD
         elif model_selection == "fcm":
             X_T = input_array.T  # ahora (30,1)
            
@@ -116,9 +111,6 @@ def batch_predict():
             y_pred = logistic_model.predict(X)
         elif model_selection == "svm":
             y_pred = svm_model.predict(X)
-        elif model_selection == "neural":
-            y_probs = neural_model.predict(X)
-            y_pred = (y_probs.flatten() > 0.5).astype(int)  # 0 o 1 sin THRESHOLD
         elif model_selection == "fcm":
             X_T = X.T
             u_new, _, _, _, _, _ = fuzz.cluster.cmeans_predict(X_T, fcm_model["centroids"], fcm_model["m"], error=fcm_model["error"], maxiter=fcm_model["maxiter"])
